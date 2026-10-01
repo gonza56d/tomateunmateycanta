@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tomate un mate y cantá · pitch trainer</title>
+  <!-- The app ships its own light and dark themes; tell Dark Reader to leave it alone. -->
+  <meta name="darkreader-lock">
+  <meta name="description" content="A browser-only pitch trainer for singers: see what you sing on a piano roll, in any key. Nothing leaves your device.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧉</text></svg>">
+  <script>
+    // Apply the saved theme before the stylesheet paints to avoid a flash.
+    try {
+      var saved = JSON.parse(localStorage.getItem('tumyc.settings.v1') || '{}').theme;
+      if (saved !== 'light' && saved !== 'dark') {
+        saved = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      document.documentElement.dataset.theme = saved;
+    } catch (e) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="toolbar">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">🧉</span>
+      <h1>Tomate un mate y cantá</h1>
+    </div>
+
+    <div class="group">
+      <button id="start" class="btn primary" type="button" aria-pressed="false">
+        <span class="dot" aria-hidden="true"></span><span class="btn-text" data-i18n="app.start">Start</span>
+      </button>
+      <button id="clear" class="btn" type="button" data-i18n="app.clear" data-i18n-title="app.clearTitle">Clear</button>
+    </div>
+
+    <div class="group live" id="live" data-status="none" aria-live="off">
+      <span class="live-note" id="live-note">—</span>
+      <span class="live-cents" id="live-cents"></span>
+      <div class="meter" id="meter" aria-hidden="true"><span class="meter-needle" id="meter-needle"></span></div>
+    </div>
+
+    <div class="group">
+      <label class="field"><span data-i18n="scale.label">Scale</span><select id="root" data-i18n-aria="scale.root"></select></label>
+      <select id="type" data-i18n-aria="scale.type"></select>
+      <button id="clear-scale" class="btn icon" type="button" data-i18n-title="scale.remove">✕</button>
+    </div>
+
+    <div class="group zoom" role="group" aria-label="Zoom">
+      <button id="zoom-out" class="btn icon" type="button" data-i18n-title="zoom.out">−</button>
+      <button id="zoom-fit" class="btn" type="button" data-i18n-title="zoom.fitTitle"><span class="btn-text" data-i18n="zoom.fit">Fit</span><span class="btn-glyph" aria-hidden="true">⤢</span></button>
+      <button id="zoom-in" class="btn icon" type="button" data-i18n-title="zoom.in">+</button>
+    </div>
+
+    <div class="group">
+      <details class="menu" id="settings">
+        <summary class="btn icon" data-i18n-title="settings.title">⚙</summary>
+        <div class="menu-panel">
+          <label><span data-i18n="settings.tolerance">Tolerance</span><select id="tolerance"></select></label>
+          <label><span data-i18n="settings.speed">Speed</span><select id="speed"></select></label>
+          <label><span data-i18n="settings.gate">Mic sensitivity</span><select id="gate"></select></label>
+          <label><span data-i18n="settings.names">Note names</span><select id="names"></select></label>
+          <div class="menu-row compact-only">
+            <button class="btn lang lang-toggle" type="button">EN</button>
+            <button class="btn icon theme-toggle" type="button">☾</button>
+          </div>
+        </div>
+      </details>
+      <button class="btn lang lang-toggle wide-only" type="button">EN</button>
+      <button class="btn icon theme-toggle wide-only" type="button">☾</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="roll" id="roll">
+      <div class="roll-content" id="roll-content">
+        <div class="ruler-row">
+          <div class="corner"></div>
+          <canvas id="ruler" aria-hidden="true"></canvas>
+        </div>
+        <div class="roll-body">
+          <div class="piano" id="piano" data-i18n-aria="piano.label"></div>
+          <canvas id="grid" data-i18n-aria="grid.label"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="hint" id="hint">
+      <p data-i18n-html="hint.html">Press <b>Start</b>, allow the microphone and sing.<br>Click a piano key to hear a reference note.</p>
+    </div>
+    <div class="toast" id="toast" role="alert" hidden></div>
+  </main>
+
+  <footer class="statusbar">
+    <span id="scale-info"></span>
+    <span class="legend" id="legend" hidden>
+      <i class="good"></i><span data-i18n="legend.good">in tune</span>
+      <i class="meh"></i><span data-i18n="legend.meh">a bit off</span>
+      <i class="bad"></i><span data-i18n="legend.bad">off scale</span>
+    </span>
+    <span class="spacer"></span>
+    <span class="kbd-hint"><kbd data-i18n="kbd.space">Space</kbd> <span data-i18n="kbd.hint">start / stop</span></span>
+  </footer>
+
+  <div class="rotate" id="rotate" role="dialog" aria-modal="true">
+    <div class="rotate-phone" aria-hidden="true"></div>
+    <p class="rotate-title" data-i18n="rotate.title">Rotate your phone</p>
+    <p class="rotate-body" data-i18n="rotate.body">The piano and the grid need the width of a landscape screen.</p>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
