@@ -15,6 +15,7 @@ const GAP_SEC = 0.12;      // break the trace when voiced samples are further ap
 const LIVE_HOLD_MS = 350;  // keep the readout briefly after the voice stops
 const NOW_POS = 0.85;      // the "now" line sits at 85% of the grid width while tracking
 const WIDTH_CHUNK = 256;   // grow the scrollable area in steps while recording
+const SPEEDS = [50, 100, 150, 200]; // horizontal zoom presets, px per second
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
 
 const $ = (id) => document.getElementById(id);
@@ -32,7 +33,7 @@ const els = {
 
 const DEFAULTS = {
   theme: null, lang: null, names: null, namesAuto: true,
-  root: '', type: 'minor', tolerance: 15, pxPerSec: 80, gate: 0.01,
+  root: '', type: 'minor', tolerance: 15, pxPerSec: 100, gate: 0.01,
 };
 
 const state = {
@@ -73,6 +74,7 @@ function loadSettings() {
     s.namesAuto = true;
   }
   if (!SCALE_TYPES[s.type]) s.type = DEFAULTS.type;
+  if (!SPEEDS.includes(s.pxPerSec)) s.pxPerSec = DEFAULTS.pxPerSec;
   return s;
 }
 
@@ -279,7 +281,8 @@ function populateControls() {
   fillSelect(els.root, [['', t('scale.none')], ...Array.from({ length: 12 }, (_, pc) => [pc, rootLabel(pc, s.names)])], s.root ?? '', '');
   fillSelect(els.type, Object.keys(SCALE_TYPES).map((key) => [key, t(`scale.${key}`)]), s.type, DEFAULTS.type);
   fillSelect(els.tolerance, [5, 10, 15, 20, 25, 30].map((c) => [c, `±${c} ¢${toleranceNote(c)}`]), s.tolerance, DEFAULTS.tolerance);
-  fillSelect(els.speed, [[40, t('speed.slow')], [80, t('speed.normal')], [120, t('speed.fast')], [160, t('speed.faster')]], s.pxPerSec, DEFAULTS.pxPerSec);
+  const speedLabels = [t('speed.slow'), t('speed.normal'), t('speed.fast'), t('speed.faster')];
+  fillSelect(els.speed, SPEEDS.map((v, i) => [v, speedLabels[i]]), s.pxPerSec, DEFAULTS.pxPerSec);
   fillSelect(els.gate, [[0.004, t('gate.high')], [0.01, t('gate.normal')], [0.025, t('gate.low')]], s.gate, DEFAULTS.gate);
   fillSelect(els.names, [['letters', t('names.letters')], ['solfege', t('names.solfege')]], s.names, 'letters');
 }
